@@ -1,0 +1,16 @@
+[
+{
+  "modid": "TooManyClerics",
+  "name": "Too Many Clerics",
+  "description": "Balancing for spawned villager professions.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["FresnoBob43"],
+  "credits": "FresnoBob43",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
