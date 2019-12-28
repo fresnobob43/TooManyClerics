@@ -3,6 +3,8 @@ out/
 run/
 eclipse/
 .gradle/
+.idea/
+stale_outputs_checked
 *.log
 *.iml
 *.ipr

@@ -1,6 +1,6 @@
 [
 {
-  "modid": "TooManyClerics",
+  "modid": "tmclerics",
   "name": "Too Many Clerics",
   "description": "Balancing for spawned villager professions.",
   "version": "${version}",
