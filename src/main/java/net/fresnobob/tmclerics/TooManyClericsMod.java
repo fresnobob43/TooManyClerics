@@ -42,11 +42,11 @@ public class TooManyClericsMod {
         final Logger logger = event.getModLog();
         logger.info("initializing");
         final CareerAdvisor careerAdvisor = new CareerAdvisor(() -> ForgeRegistries.VILLAGER_PROFESSIONS.getValuesCollection(), logger);
-        if (TooManyClericsConfig.rebalancing.enabled) {
+        if (TooManyClericsConfig.enableNewbornCareerBalancing) {
             logger.debug("enabling rebalancing");
             MinecraftForge.EVENT_BUS.register(new BabyHandler(careerAdvisor, logger));
         }
-        if (TooManyClericsConfig.amnesiaPotion.enabled) {
+        if (TooManyClericsConfig.enableAmnesiaPotions) {
             logger.debug("enabling amnesiaPotion");
             MinecraftForge.EVENT_BUS.register(new PotionHandler(new AmnesiaPotion(careerAdvisor, logger), logger));
         }

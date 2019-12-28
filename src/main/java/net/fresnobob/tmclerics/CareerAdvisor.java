@@ -5,9 +5,11 @@ import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerCareer;
 import net.minecraftforge.fml.common.registry.VillagerRegistry.VillagerProfession;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Supplier;
-
 
 import static java.util.Objects.requireNonNull;
 import static net.fresnobob.tmclerics.ReflectionUtils.getFieldValue;
@@ -24,8 +26,8 @@ class CareerAdvisor {
     // ================================================================================================
     // Constructors
 
-    CareerAdvisor(Supplier<Collection<VillagerProfession>> professionSupplier, Logger logger) {
-        this.professionSupplier = requireNonNull(professionSupplier);
+    CareerAdvisor(final Supplier<Collection<VillagerProfession>> professionsSupplier, final Logger logger) {
+        this.professionSupplier = requireNonNull(professionsSupplier);
         this.logger = requireNonNull(logger);
     }
 
@@ -33,7 +35,13 @@ class CareerAdvisor {
     // Public methods
 
     void selectCareerFor(EntityVillager villager) {
-        final List<CareerOpportunity> ops = getCareerOpportunities();
+        final List<CareerOpportunity> ops;
+        try {
+            ops = getCareerOpportunities();
+        } catch (ReflectiveOperationException e) {
+            logger.error("unable to reassign villager career", e);
+            return;
+        }
         final CareerOpportunity op = weightedRandomChoice(ops, () -> villager.getRNG().nextDouble());
         assignCareer(villager, op);
     }
@@ -41,7 +49,7 @@ class CareerAdvisor {
     // ================================================================================================
     // Private
 
-    private List<CareerOpportunity> getCareerOpportunities() {
+    private List<CareerOpportunity> getCareerOpportunities() throws ReflectiveOperationException {
         final List<CareerOpportunity> out = new ArrayList<>();
         for (VillagerProfession p : this.professionSupplier.get()) {
             final List<VillagerCareer> careers = getFieldValue("careers", VillagerProfession.class, p, List.class);
@@ -52,7 +60,7 @@ class CareerAdvisor {
         return Collections.unmodifiableList(out);
     }
 
-    private CareerOpportunity weightedRandomChoice(List<CareerOpportunity> ops, Supplier<Double> dieRoller) {
+    CareerOpportunity weightedRandomChoice(List<CareerOpportunity> ops, Supplier<Double> dieRoller) {
         double range = 0;
         for (final CareerOpportunity op : ops) {
             range += op.getPreferenece();
@@ -68,13 +76,25 @@ class CareerAdvisor {
 
     private void assignCareer(final EntityVillager villager, final CareerOpportunity c) {
         logger.info("Retraining " + villager.getDisplayName().getFormattedText() + "  to be a " + c + " " + villager);
+        final int careerId;
+        try {
+            careerId = c.getCareerId();
+        } catch (ReflectiveOperationException e) {
+            logger.error("unable to assignCareer", e);
+            return;
+        }
         villager.setProfession(c.getProfession());
-        setFieldValue("careerId", EntityVillager.class, villager, c.getCareerId());
-        setFieldValue("careerLevel", EntityVillager.class, villager, 1);
-        setFieldValue("buyingList", EntityVillager.class, villager, null);
+        try {
+            setFieldValue("careerLevel", EntityVillager.class, villager, 1);
+            setFieldValue("buyingList", EntityVillager.class, villager, null);
+            setFieldValue("careerId", EntityVillager.class, villager, careerId);
+        } catch (ReflectiveOperationException e) {
+            logger.error("unable to assignCareer, villager may be in a bad state!", e);
+            return;
+        }
     }
 
-    private static class CareerOpportunity {
+    static class CareerOpportunity {
 
         private final VillagerProfession profession;
         private final VillagerCareer career;
@@ -93,13 +113,13 @@ class CareerAdvisor {
             return this.profession;
         }
 
-        public int getCareerId() {
+        public int getCareerId() throws ReflectiveOperationException {
             return getFieldValue("id", VillagerCareer.class, career, Integer.class);
         }
 
         @Override
         public String toString() {
-            return career.getName() + getCareerId();
+            return career.getName();
         }
 
 

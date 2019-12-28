@@ -20,7 +20,7 @@ import org.apache.logging.log4j.Logger;
 import javax.annotation.Nullable;
 
 import static java.util.Objects.requireNonNull;
-import static net.fresnobob.tmclerics.TooManyClericsMod.*;
+import static net.fresnobob.tmclerics.TooManyClericsMod.MODID;
 
 /**
  * @author fresnobob

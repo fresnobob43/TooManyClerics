@@ -3,6 +3,7 @@ package net.fresnobob.tmclerics;
 //import net.minecraft.init.Blocks;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  * @author fresnobob43
@@ -10,23 +11,21 @@ import java.lang.reflect.Field;
  */
 class ReflectionUtils {
 
-    static <T> T getFieldValue(String fieldName, Class onClass, Object onObject, Class<T> expectedType) {
-        try {
-            final Field f = onClass.getDeclaredField(fieldName);
-            f.setAccessible(true);
-            return (T) f.get(onObject);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
-        }
+    static <T> T getFieldValue(String fieldName, Class onClass, Object onObject, Class<T> expectedType)
+            throws ReflectiveOperationException {
+        final Field f = onClass.getDeclaredField(fieldName);
+        f.setAccessible(true);
+        return (T) f.get(onObject);
     }
 
-    static void setFieldValue(String fieldName, Class onClass, Object onObject, Object newValue) {
-        try {
-            final Field f = onClass.getDeclaredField(fieldName);
-            f.setAccessible(true);
-            f.set(onObject, newValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+    static void setFieldValue(String fieldName, Class onClass, Object onObject, Object newValue)
+            throws ReflectiveOperationException {
+        final Field f = onClass.getDeclaredField(fieldName);
+        if (Modifier.isFinal(f.getModifiers())) {
+            // guard against stupid mistakes
+            throw new IllegalAccessException(onClass + "." + fieldName + " is final");
         }
+        f.setAccessible(true);
+        f.set(onObject, newValue);
     }
 }
