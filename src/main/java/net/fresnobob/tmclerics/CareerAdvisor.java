@@ -17,8 +17,6 @@ import static net.fresnobob.tmclerics.ReflectionUtils.setFieldValue;
 
 class CareerAdvisor {
 
-    // ================================================================================================
-    // Fields
 
     private final Supplier<Collection<VillagerProfession>> professionSupplier;
     private final Logger logger;
@@ -70,7 +68,7 @@ class CareerAdvisor {
             dieRoll -= op.getPreferenece();
             if (dieRoll <= 0) return op;
         }
-        logger.error("Failed to make weighted selection. This is definitely a bug.");
+        logger.error("Failed to make weighted selection. This is definitely a bug.  " + dieRoll + " " + range);
         return ops.get(0);
     }
 

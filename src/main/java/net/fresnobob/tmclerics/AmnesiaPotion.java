@@ -17,6 +17,7 @@ import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import static java.util.Objects.requireNonNull;
@@ -28,14 +29,22 @@ import static net.fresnobob.tmclerics.TooManyClericsMod.MODID;
  */
 class AmnesiaPotion extends Potion {
 
-    public static final String AWKWARD = "awkward";
-    private static final String NAME = "amnesia";
+    // ================================================================================================
+    // Constants
 
+    private static final String AWKWARD = "awkward";
+    private static final String NAME = "amnesia";
     private static final boolean IS_BAD_EFFECT = true;
     private static final int LIQUID_COLOR = 43520;
 
+    // ================================================================================================
+    // Fields
+
     private final CareerAdvisor careerAdvisor;
     private final Logger logger;
+
+    // ================================================================================================
+    // Constructor
 
     AmnesiaPotion(final CareerAdvisor careerAdvisor, final Logger logger) {
         super(IS_BAD_EFFECT, LIQUID_COLOR);
@@ -55,7 +64,7 @@ class AmnesiaPotion extends Potion {
             ItemStack input = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), awkwardPotion);
             ItemStack ingredient = new ItemStack(Items.EMERALD);
             ItemStack output = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), pt);
-            BrewingRecipeRegistry.addRecipe(new BrewingRecipe(input, ingredient, output));
+            BrewingRecipeRegistry.addRecipe(new CustomBrewingRecipe(input, ingredient, output));
         }
 
     }
@@ -78,4 +87,25 @@ class AmnesiaPotion extends Potion {
         return true;
     }
 
+
+    /**
+     * Because isInput in the base class is broken?  I don't fully understand.
+     * https://www.minecraftforge.net/forum/topic/60632-two-questions-when-creating-custom-potions/
+     */
+
+    class CustomBrewingRecipe extends BrewingRecipe {
+
+        public CustomBrewingRecipe(@Nonnull ItemStack input, @Nonnull ItemStack ingredient, @Nonnull ItemStack output) {
+            super(input, ingredient, output);
+        }
+
+        @Override
+        public boolean isInput(@Nonnull ItemStack stack) {
+            return ItemStack.areItemStacksEqualUsingNBTShareTag(stack, getInput());
+        }
+    }
+
 }
+
+
+
