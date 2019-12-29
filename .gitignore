@@ -10,4 +10,5 @@ stale_outputs_checked
 *.iml
 *.ipr
 *.iws
+*.jar
 *~

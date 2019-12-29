@@ -1,6 +1,5 @@
 package net.fresnobob.tmclerics;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityVillager;
@@ -11,7 +10,6 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.brewing.BrewingRecipe;
 import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -24,7 +22,7 @@ import static java.util.Objects.requireNonNull;
 import static net.fresnobob.tmclerics.TooManyClericsMod.MODID;
 
 /**
- * @author fresnobob
+ * @author fresnobob43
  * @since 0.0.1
  */
 class AmnesiaPotion extends Potion {
@@ -54,31 +52,35 @@ class AmnesiaPotion extends Potion {
     }
 
     void register(IForgeRegistry<PotionType> registry) {
+        logger.debug("registering AmnesiaPotion type");
         requireNonNull(registry);
         PotionEffect pe = new PotionEffect(this);
         PotionType pt = new PotionType(MODID + "." + NAME, pe);
         registry.register(pt.setRegistryName(MODID, NAME));
         {
-            PotionType awkwardPotion = registry.getValue(new ResourceLocation(AWKWARD));
-            requireNonNull(awkwardPotion, "couldn't not load " + AWKWARD + " potion");
-            ItemStack input = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), awkwardPotion);
-            ItemStack ingredient = new ItemStack(Items.EMERALD);
-            ItemStack output = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), pt);
-            BrewingRecipeRegistry.addRecipe(new CustomBrewingRecipe(input, ingredient, output));
+            final ResourceLocation r = new ResourceLocation(AWKWARD);
+            final PotionType awkwardPotion = registry.getValue(new ResourceLocation(AWKWARD));
+            if (awkwardPotion == null) {
+                logger.error("failed to load " + r + ", Potion of Amnesia will not be brewable!");
+            } else {
+                requireNonNull(awkwardPotion, "couldn't not load " + AWKWARD + " potion");
+                ItemStack input = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), awkwardPotion);
+                ItemStack ingredient = new ItemStack(Items.EMERALD);
+                ItemStack output = PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), pt);
+                BrewingRecipeRegistry.addRecipe(new CustomBrewingRecipe(input, ingredient, output));
+            }
         }
 
     }
 
+    // ================================================================================================
+    // Potion implementation
+
     @Override
     public void affectEntity(@Nullable Entity entity, @Nullable Entity entity2, EntityLivingBase entity3, int effect, double effect2) {
-        String msg = I18n.format("my.language.key", TextFormatting.RED, TextFormatting.RESET);
-        logger.warn(msg);
-
-        logger.debug("=============================== affect entity on  " + entity + " entity2: " + entity2 + " entity3:  " + entity3 +
-                " effect: " + effect);
+        logger.debug("affectEntity " + entity + " entity2: " + entity2 + " entity3:  " + entity3 + " effect: " + effect);
         if (entity3 instanceof EntityVillager) {
             careerAdvisor.selectCareerFor((EntityVillager) entity3);
-
         }
     }
 
@@ -89,7 +91,7 @@ class AmnesiaPotion extends Potion {
 
 
     /**
-     * Because isInput in the base class is broken?  I don't fully understand.
+     * Because isInput() in the base class is broken?  I don't fully understand.
      * https://www.minecraftforge.net/forum/topic/60632-two-questions-when-creating-custom-potions/
      */
 

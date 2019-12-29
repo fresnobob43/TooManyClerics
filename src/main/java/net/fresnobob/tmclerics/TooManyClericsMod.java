@@ -1,6 +1,5 @@
 package net.fresnobob.tmclerics;
 
-import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionType;
@@ -18,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import static java.util.Objects.requireNonNull;
 
 /**
+ * Main mod class.
+ *
  * @author fresnobob43
  * @since 0.0.1
  */
@@ -28,9 +29,7 @@ public class TooManyClericsMod {
     // ================================================================================================
     // Constants
 
-    private static final String TMC_VERSION = "0.0.1";
-    private static final String FORGE_VERSION = "1.12.2-14.23.5.2768";
-    static final String VERSION = FORGE_VERSION + "-" + TMC_VERSION;
+    static final String VERSION = "1.12.2-0.0.1";
     static final String MODID = "tmclerics";
     static final String NAME = "Too Many Clerics";
 
@@ -97,10 +96,6 @@ public class TooManyClericsMod {
         public void registerPotionTypes(RegistryEvent.Register<PotionType> event) {
             logger.debug("registering AmnesiaPotion type");
             amnesiaPotion.register(event.getRegistry());
-
-            String msg = I18n.format("my.language.key", TextFormatting.RED, TextFormatting.RESET);
-            logger.warn(msg);
-
         }
     }
 
