@@ -27,6 +27,8 @@ package net.fresnobob.tmclerics;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.Comment;
 
+import java.util.function.Function;
+
 /**
  * Config using the forge framework.
  *
@@ -45,51 +47,88 @@ public class TooManyClericsConfig {
     @Comment("Whether Potions of Amnesia can be brewed.  Change requires restart.")
     public static boolean enableAmnesiaPotions = true;
 
+    @Comment("Adjusts the relative frequency for specific careers.  0 = 'never spawn'")
+    public static OddsPerCareer oddsPerCareer = new OddsPerCareer();
 
-    @Comment("Adjust the frequency for specific careers")
-    private static Careers careers = new Careers();
+    public static class OddsPerCareer {
 
-    private static class Careers {
-
-        @Config.RangeDouble(min = 0)
-        public static double Armorer = 1.0;
+        private static double DEFAULT_ODDS = 1.0;
 
         @Config.RangeDouble(min = 0)
-        public static double Butcher = 1.0;
+        public double Armorer = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Cartographer = 1.0;
+        public double Butcher = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Cleric = 1.0;
+        public double Cartographer = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Farmer = 1.0;
+        public double Cleric = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Fletcher = 1.0;
+        public double Farmer = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Fisherman = 1.0;
+        public double Fletcher = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Leatherworker = 1.0;
+        public double Fisherman = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Librarian = 1.0;
+        public double Leatherworker = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Nitwit = 1.0;
+        public double Librarian = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Shepherd = 1.0;
+        public double Nitwit = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Toolsmith = 1.0;
+        public double Shepherd = DEFAULT_ODDS;
 
         @Config.RangeDouble(min = 0)
-        public static double Weaponsmith = 1.0;
+        public double Toolsmith = DEFAULT_ODDS;
+
+        @Config.RangeDouble(min = 0)
+        public double Weaponsmith = DEFAULT_ODDS;
 
     }
 
+    static class ConfiguredCareerOdds implements Function<String, Double> {
+
+        @Override
+        public Double apply(String careerName) {
+            switch (careerName) {
+                case "armor":
+                    return oddsPerCareer.Armorer;
+                case "butcher":
+                    return oddsPerCareer.Butcher;
+                case "cartographer":
+                    return oddsPerCareer.Cartographer;
+                case "cleric":
+                    return oddsPerCareer.Cleric;
+                case "farmer":
+                    return oddsPerCareer.Farmer;
+                case "fletcher":
+                    return oddsPerCareer.Fletcher;
+                case "fisherman":
+                    return oddsPerCareer.Fisherman;
+                case "leather":
+                    return oddsPerCareer.Leatherworker;
+                case "librarian":
+                    return oddsPerCareer.Librarian;
+                case "nitwit":
+                    return oddsPerCareer.Nitwit;
+                case "shepherd":
+                    return oddsPerCareer.Shepherd;
+                case "tool":
+                    return oddsPerCareer.Toolsmith;
+                case "weapon":
+                    return oddsPerCareer.Weaponsmith;
+                default:
+                    return null;
+            }
+        }
+    }
 }
