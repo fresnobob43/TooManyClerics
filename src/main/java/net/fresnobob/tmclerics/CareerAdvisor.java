@@ -33,6 +33,7 @@ import net.minecraftforge.fml.relauncher.ReflectionHelper.UnableToAccessFieldExc
 import org.apache.logging.log4j.Logger;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.Objects.requireNonNull;
@@ -60,13 +61,17 @@ class CareerAdvisor {
     // Fields
 
     private final Supplier<Collection<VillagerProfession>> professionSupplier;
+    private final Function<String, Double> careerOdds;
     private final Logger logger;
 
     // ================================================================================================
     // Constructors
 
-    CareerAdvisor(final Supplier<Collection<VillagerProfession>> professionsSupplier, final Logger logger) {
+    CareerAdvisor(final Supplier<Collection<VillagerProfession>> professionsSupplier,
+                  final Function<String, Double> careerOdds,
+                  final Logger logger) {
         this.professionSupplier = requireNonNull(professionsSupplier);
+        this.careerOdds = requireNonNull(careerOdds);
         this.logger = requireNonNull(logger);
     }
 
@@ -99,7 +104,12 @@ class CareerAdvisor {
                 throw new ReflectiveOperationException(uafe);
             }
             for (VillagerCareer c : careers) {
-                out.add(new CareerOpportunity(p, c));
+                Double odds = this.careerOdds.apply(c.getName());
+                if (odds == null) {
+                    logger.debug("unknown career " + c.getName() + ", setting odds to 1.0");
+                    odds = 1.0;
+                }
+                out.add(new CareerOpportunity(p, c, odds));
             }
         }
         return Collections.unmodifiableList(out);
@@ -108,11 +118,11 @@ class CareerAdvisor {
     CareerOpportunity weightedRandomChoice(List<CareerOpportunity> ops, Supplier<Double> dieRoller) {
         double range = 0;
         for (final CareerOpportunity op : ops) {
-            range += op.getPreferenece();
+            range += op.getOdds();
         }
         double dieRoll = dieRoller.get() * range;
         for (final CareerOpportunity op : ops) {
-            dieRoll -= op.getPreferenece();
+            dieRoll -= op.getOdds();
             if (dieRoll <= 0) return op;
         }
         logger.error("Failed to make weighted selection. This is definitely a bug in TooManyClerics.  Defaulting to  " +
@@ -165,15 +175,16 @@ class CareerAdvisor {
 
         private final VillagerProfession profession;
         private final VillagerCareer career;
-        private double preference = 1.0;
+        private double odds;
 
-        CareerOpportunity(final VillagerProfession profession, final VillagerCareer career) {
+        CareerOpportunity(final VillagerProfession profession, final VillagerCareer career, final double odds) {
             this.profession = requireNonNull(profession);
             this.career = requireNonNull(career);
+            this.odds = odds;
         }
 
-        double getPreferenece() {
-            return preference;
+        double getOdds() {
+            return odds;
         }
 
         public VillagerProfession getProfession() {

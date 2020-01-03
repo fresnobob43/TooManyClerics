@@ -24,18 +24,15 @@
 //
 package net.fresnobob.tmclerics;
 
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionType;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
+
+import java.util.function.Function;
 
 import static java.util.Objects.requireNonNull;
 import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.getPrivateValue;
@@ -57,6 +54,9 @@ public class TooManyClericsMod {
     static final String MODID = "tmclerics";
     static final String NAME = "Too Many Clerics";
 
+    // ================================================================================================
+    // Fields
+
     private Logger logger;
 
     // ================================================================================================
@@ -67,8 +67,9 @@ public class TooManyClericsMod {
 
         this.logger = event.getModLog();
         logger.info("initializing " + event.getSide());
-        final CareerAdvisor careerAdvisor = new CareerAdvisor(() -> ForgeRegistries.VILLAGER_PROFESSIONS.getValuesCollection(), logger);
-        if (TooManyClericsConfig.enableNewbornCareerBalancing && Side.SERVER == event.getSide()) {
+        final CareerAdvisor careerAdvisor = new CareerAdvisor(() -> ForgeRegistries.VILLAGER_PROFESSIONS.getValuesCollection(),
+                new TooManyClericsConfig.ConfiguredCareerOdds(), logger);
+        if (TooManyClericsConfig.enableNewbornCareerBalancing) {
             logger.debug("enabling newborn balancing");
             MinecraftForge.EVENT_BUS.register(new NewbornHandler(careerAdvisor, logger));
         }
@@ -78,39 +79,8 @@ public class TooManyClericsMod {
         }
         if (TooManyClericsConfig.enableAmnesiaPotions) {
             logger.debug("enabling amnesiaPotion");
-            MinecraftForge.EVENT_BUS.register(new PotionHandler(new AmnesiaPotion(careerAdvisor, logger), logger));
+            MinecraftForge.EVENT_BUS.register(new AmnesiaPotionHandler(careerAdvisor, logger));
         }
     }
-
-    @EventHandler
-    public void onServerStart(FMLServerStartingEvent event) {
-        logger.info("onServerStart!!!!!!!!!!!!");
-    }
-    // ================================================================================================
-    // Game event handlers
-
-    private static class PotionHandler {
-
-        private final Logger logger;
-        private final AmnesiaPotion amnesiaPotion;
-
-        PotionHandler(AmnesiaPotion amnesiaPotion, Logger logger) {
-            this.amnesiaPotion = requireNonNull(amnesiaPotion);
-            this.logger = requireNonNull(logger);
-        }
-
-        @SubscribeEvent
-        public void registerPotions(RegistryEvent.Register<Potion> event) {
-            logger.debug("registering AmnesiaPotion ");
-            event.getRegistry().register(amnesiaPotion);
-        }
-
-        @SubscribeEvent
-        public void registerPotionTypes(RegistryEvent.Register<PotionType> event) {
-            logger.debug("registering AmnesiaPotion type");
-            amnesiaPotion.register(event.getRegistry());
-        }
-    }
-
 
 }

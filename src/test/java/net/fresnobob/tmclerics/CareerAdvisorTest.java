@@ -28,10 +28,10 @@ public class CareerAdvisorTest {
     @Test
     public void testWeightedRandomChoice() {
         final List<VillagerProfession> profs = ImmutableList.of(BROWN_ROBE, PURPLE_ROBE);
-        final CareerAdvisor ca = new CareerAdvisor(() -> profs, logger);
-        final CareerOpportunity farmerOp = new CareerOpportunity(BROWN_ROBE, FARMER);
-        final CareerOpportunity fletcherOp = new CareerOpportunity(BROWN_ROBE, FLETCHER);
-        final CareerOpportunity clericOp = new CareerOpportunity(BROWN_ROBE, CLERIC);
+        final CareerAdvisor ca = new CareerAdvisor(() -> profs, s -> 1.0, logger);
+        final CareerOpportunity farmerOp = new CareerOpportunity(BROWN_ROBE, FARMER, 1.0);
+        final CareerOpportunity fletcherOp = new CareerOpportunity(BROWN_ROBE, FLETCHER, 1.0);
+        final CareerOpportunity clericOp = new CareerOpportunity(BROWN_ROBE, CLERIC, 1.0);
         final List<CareerOpportunity> ops = ImmutableList.of(farmerOp, fletcherOp, clericOp);
         assertTrue(farmerOp == ca.weightedRandomChoice(ops, () -> 0.0));
         assertTrue(farmerOp == ca.weightedRandomChoice(ops, () -> 0.333));
