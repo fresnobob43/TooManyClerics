@@ -53,7 +53,7 @@ public class TooManyClericsMod {
     // ================================================================================================
     // Constants
 
-    static final String VERSION = "1.12.2-0.0.1";
+    static final String VERSION = "1.12.2-0.0.2";
     static final String MODID = "tmclerics";
     static final String NAME = "Too Many Clerics";
 
