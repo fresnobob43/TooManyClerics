@@ -76,6 +76,15 @@ processResources {
     }
 }
 
+dependencies {
+    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
+    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
+}
+
+test {
+    useJUnitPlatform()
+}
+
 // ugh:
 // https://www.minecraftforge.net/forum/topic/21150-using-intellij-idea-for-mod-development-with-forgegradle/page/2/
 apply plugin: 'idea'
@@ -85,17 +94,8 @@ idea {
     }
 }
 
-//sourceSets {
-//    main {
-//        output.resourcesDir = output.classesDir
-//    }
-//}
-
-dependencies {
-    testImplementation('org.junit.jupiter:junit-jupiter-api:5.4.2')
-    testRuntime('org.junit.jupiter:junit-jupiter-engine:5.4.2')
-}
-
-test {
-    useJUnitPlatform()
+sourceSets {
+    main {
+        output.resourcesDir = output.classesDir
+    }
 }

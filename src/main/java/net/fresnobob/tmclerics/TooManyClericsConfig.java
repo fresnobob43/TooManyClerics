@@ -39,7 +39,57 @@ public class TooManyClericsConfig {
     @Comment("Whether newborn villager career choices should be rebalanced.  Set to false for vanilla behavior.  Change requires restart.")
     public static boolean enableNewbornCareerBalancing = true;
 
+    @Comment("Whether cured zombie career choices should be rebalanced.  Set to false for vanilla behavior.  Change requires restart.")
+    public static boolean enableCuredZombieCareerBalancing = true;
+
     @Comment("Whether Potions of Amnesia can be brewed.  Change requires restart.")
     public static boolean enableAmnesiaPotions = true;
+
+
+    @Comment("Adjust the frequency for specific careers")
+    private static Careers careers = new Careers();
+
+    private static class Careers {
+
+        @Config.RangeDouble(min = 0)
+        public static double Armorer = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Butcher = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Cartographer = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Cleric = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Farmer = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Fletcher = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Fisherman = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Leatherworker = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Librarian = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Nitwit = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Shepherd = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Toolsmith = 1.0;
+
+        @Config.RangeDouble(min = 0)
+        public static double Weaponsmith = 1.0;
+
+    }
 
 }
