@@ -86,8 +86,12 @@ class CareerAdvisor {
             logger.error("unable to reassign villager career", e);
             return;
         }
-        final CareerOpportunity op = weightedRandomChoice(ops, () -> villager.getRNG().nextDouble());
-        assignCareer(villager, op);
+        if (ops.size() == 0) {
+            logger.debug("all career choices have zero odds, doing nothing");
+        } else {
+            final CareerOpportunity op = weightedRandomChoice(ops, () -> villager.getRNG().nextDouble());
+            assignCareer(villager, op);
+        }
     }
 
     // ================================================================================================
@@ -108,8 +112,9 @@ class CareerAdvisor {
                 if (odds == null) {
                     logger.debug("unknown career " + c.getName() + ", setting odds to 1.0");
                     odds = 1.0;
+                } else if (odds > 0) {
+                    out.add(new CareerOpportunity(p, c, odds));
                 }
-                out.add(new CareerOpportunity(p, c, odds));
             }
         }
         return Collections.unmodifiableList(out);
@@ -131,7 +136,7 @@ class CareerAdvisor {
     }
 
     private void assignCareer(final EntityVillager villager, final CareerOpportunity c) {
-        logger.debug("retraining " + villager.getDisplayName().getFormattedText() + "  to be a " + c + " " + villager);
+        logger.debug("retraining " + villager.getDisplayName().getFormattedText() + " to be a " + c + " " + villager);
         final int villagerCareerLevel = 1;
         final int villagerCareerId;
         try {

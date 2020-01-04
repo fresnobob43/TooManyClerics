@@ -77,7 +77,12 @@ class CuredZombieHandler {
 
     @SubscribeEvent
     public void onWorldLoad(WorldEvent.Load event) {
-        event.getWorld().addEventListener(new CuredZombieWorldListener(careerAdvisor, logger));
+        if (event.getWorld().isRemote) {
+            logger.debug("onWorldLoad: skipping CuredZombieHandler registration on client " + event);
+        } else {
+            logger.debug("onWorldLoad: registering CuredZombieHandler " + event);
+            event.getWorld().addEventListener(new CuredZombieWorldListener(careerAdvisor, logger));
+        }
     }
 
     // FIXME? it's unclear whether i'm responsible for doing this.  it sort of looks like not

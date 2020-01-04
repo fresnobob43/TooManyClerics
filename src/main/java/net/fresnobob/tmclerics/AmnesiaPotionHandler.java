@@ -109,7 +109,6 @@ class AmnesiaPotionHandler {
         }
 
         void register(IForgeRegistry<PotionType> registry) {
-            logger.debug("registering AmnesiaPotion type");
             requireNonNull(registry);
             PotionEffect pe = new PotionEffect(this);
             PotionType pt = new PotionType(MODID + "." + NAME, pe);

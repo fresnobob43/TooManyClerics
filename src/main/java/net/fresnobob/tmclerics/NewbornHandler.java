@@ -54,7 +54,7 @@ class NewbornHandler {
     @SubscribeEvent
     public void onBabySpawn(BabyEntitySpawnEvent event) {
         if (event.getChild().getServer() == null) {
-            logger.debug("ignoring non-server BabySpawnEvent");
+            logger.trace("ignoring non-server BabySpawnEvent");
             return;
         }
         // https://github.com/MinecraftForge/MinecraftForge/issues/1687

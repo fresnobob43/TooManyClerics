@@ -38,19 +38,22 @@ import java.util.function.Function;
 @Config(modid = TooManyClericsMod.MODID, name = TooManyClericsMod.NAME)
 public class TooManyClericsConfig {
 
-    @Comment("Whether newborn villager career choices should be rebalanced.  Set to false for vanilla behavior.  Change requires restart.")
+    @Comment("Whether newborn villager career choices should be rebalanced.  Set to false for vanilla behavior.")
+    @Config.RequiresWorldRestart
     public static boolean enableNewbornCareerBalancing = true;
 
-    @Comment("Whether cured zombie career choices should be rebalanced.  Set to false for vanilla behavior.  Change requires restart.")
+    @Comment("Whether cured zombie career choices should be rebalanced.  Set to false for vanilla behavior.")
+    @Config.RequiresWorldRestart
     public static boolean enableCuredZombieCareerBalancing = true;
 
-    @Comment("Whether Potions of Amnesia can be brewed.  Change requires restart.")
+    @Comment("Whether Potions of Amnesia can be brewed.")
+    @Config.RequiresMcRestart
     public static boolean enableAmnesiaPotions = true;
 
     @Comment("Adjusts the relative frequency for specific careers.  0 = 'never spawn'")
-    public static OddsPerCareer oddsPerCareer = new OddsPerCareer();
+    public static CareerFrequencyConfig careerFrequencies = new CareerFrequencyConfig();
 
-    public static class OddsPerCareer {
+    public static class CareerFrequencyConfig {
 
         private static double DEFAULT_ODDS = 1.0;
 
@@ -101,31 +104,31 @@ public class TooManyClericsConfig {
         public Double apply(String careerName) {
             switch (careerName) {
                 case "armor":
-                    return oddsPerCareer.Armorer;
+                    return careerFrequencies.Armorer;
                 case "butcher":
-                    return oddsPerCareer.Butcher;
+                    return careerFrequencies.Butcher;
                 case "cartographer":
-                    return oddsPerCareer.Cartographer;
+                    return careerFrequencies.Cartographer;
                 case "cleric":
-                    return oddsPerCareer.Cleric;
+                    return careerFrequencies.Cleric;
                 case "farmer":
-                    return oddsPerCareer.Farmer;
+                    return careerFrequencies.Farmer;
                 case "fletcher":
-                    return oddsPerCareer.Fletcher;
+                    return careerFrequencies.Fletcher;
                 case "fisherman":
-                    return oddsPerCareer.Fisherman;
+                    return careerFrequencies.Fisherman;
                 case "leather":
-                    return oddsPerCareer.Leatherworker;
+                    return careerFrequencies.Leatherworker;
                 case "librarian":
-                    return oddsPerCareer.Librarian;
+                    return careerFrequencies.Librarian;
                 case "nitwit":
-                    return oddsPerCareer.Nitwit;
+                    return careerFrequencies.Nitwit;
                 case "shepherd":
-                    return oddsPerCareer.Shepherd;
+                    return careerFrequencies.Shepherd;
                 case "tool":
-                    return oddsPerCareer.Toolsmith;
+                    return careerFrequencies.Toolsmith;
                 case "weapon":
-                    return oddsPerCareer.Weaponsmith;
+                    return careerFrequencies.Weaponsmith;
                 default:
                     return null;
             }

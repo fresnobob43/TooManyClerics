@@ -25,17 +25,17 @@
 package net.fresnobob.tmclerics;
 
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.config.Config;
+import net.minecraftforge.common.config.ConfigManager;
+import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import net.minecraftforge.fml.relauncher.Side;
 import org.apache.logging.log4j.Logger;
 
-import java.util.function.Function;
-
 import static java.util.Objects.requireNonNull;
-import static net.minecraftforge.fml.common.ObfuscationReflectionHelper.getPrivateValue;
 
 /**
  * Main mod class.
@@ -52,23 +52,18 @@ public class TooManyClericsMod {
 
     static final String VERSION = "1.12.2-0.0.2";
     static final String MODID = "tmclerics";
-    static final String NAME = "Too Many Clerics";
-
-    // ================================================================================================
-    // Fields
-
-    private Logger logger;
+    static final String NAME = "TooManyClerics";
 
     // ================================================================================================
     // Mod lifecycle handlers
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-
-        this.logger = event.getModLog();
-        logger.info("initializing " + event.getSide());
+        final Logger logger = requireNonNull(event.getModLog());
+        logger.info("preInit " + event.getSide());
         final CareerAdvisor careerAdvisor = new CareerAdvisor(() -> ForgeRegistries.VILLAGER_PROFESSIONS.getValuesCollection(),
                 new TooManyClericsConfig.ConfiguredCareerOdds(), logger);
+        MinecraftForge.EVENT_BUS.register(new ConfigChangeHandler(logger));
         if (TooManyClericsConfig.enableNewbornCareerBalancing) {
             logger.debug("enabling newborn balancing");
             MinecraftForge.EVENT_BUS.register(new NewbornHandler(careerAdvisor, logger));
@@ -83,4 +78,26 @@ public class TooManyClericsMod {
         }
     }
 
+    /**
+     * Handle saving config changes from the GUI.
+     */
+    private static class ConfigChangeHandler {
+
+        private final Logger logger;
+
+        ConfigChangeHandler(Logger logger) {
+            this.logger = requireNonNull(logger);
+        }
+
+        /**
+         * Inject the new values and save to the config file when the config has been changed from the GUI.
+         */
+        @SubscribeEvent
+        public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
+            if (event.getModID().equals(TooManyClericsMod.MODID)) {
+                logger.debug("config changed, syncing");
+                ConfigManager.sync(MODID, Config.Type.INSTANCE);
+            }
+        }
+    }
 }
