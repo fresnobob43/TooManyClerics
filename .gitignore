@@ -4,7 +4,7 @@ run/
 logs/
 eclipse/
 .gradle/
-.idea/
+.idea/asdfasdf
 stale_outputs_checked
 *.log
 *.iml
